@@ -60,7 +60,7 @@ def download_fasta(email: str, out_path: Path, query: str = None,
       - Return the number of records written.
     """
     
-    Entrez.email = paul.biragnet@student.upt.ro
+    Entrez.email = "paul.biragnet@student.upt.ro"
     if api_key:
         Entrez.api_key = api_key
 
