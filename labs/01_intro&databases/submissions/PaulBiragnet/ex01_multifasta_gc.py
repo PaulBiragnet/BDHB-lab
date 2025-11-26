@@ -33,7 +33,7 @@ from pathlib import Path
 import sys
 
 from Bio import SeqIO
-# from Bio import Entrez  # TODO: uncomment and use for download
+from Bio import Entrez  # TODO: uncomment and use for download
 
 
 def gc_fraction(seq: str) -> float:
@@ -59,7 +59,38 @@ def download_fasta(email: str, out_path: Path, query: str = None,
       - Write results to out_path.
       - Return the number of records written.
     """
-    raise NotImplementedError("TODO: implement download using Entrez")
+    
+    Entrez.email = paul.biragnet@student.upt.ro
+    if api_key:
+        Entrez.api_key = api_key
+
+    if accession:
+        with Entrez.efetch(db=db, id=accession, rettype="fasta", retmode="text") as handle:
+            data = handle.read()
+
+        out_path.write_text(data)
+        # Count number of records
+        return data.count(">")
+
+    elif query:
+        with Entrez.esearch(db=db, term=query, retmax=retmax) as handle:
+            result = Entrez.read(handle)
+
+        ids = result.get("IdList", [])
+        if not ids:
+            print("[warn] No records found for query.", file=sys.stderr)
+            out_path.write_text("")
+            return 0
+
+        with Entrez.efetch(db=db, id=",".join(ids), rettype="fasta", retmode="text") as handle:
+            data = handle.read()
+
+        out_path.write_text(data)
+        return data.count(">")
+    
+    else : 
+      raise NotImplementedError("TODO: implement download using Entrez")
+    
 
 
 def main():
@@ -77,17 +108,23 @@ def main():
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     # TODO: Call the download_fasta(...) function and save the results
-    # n = download_fasta(args.email, out_path, query=args.query,
-    #                    accession=args.accession, db=args.db,
-    #                    retmax=args.retmax, api_key=args.api_key)
-    # print(f"[ok] Wrote {n} records to: {out_path}")
+
+    n = download_fasta(args.email, out_path,
+                       query=args.query,
+                       accession=args.accession,
+                       db=args.db,
+                       retmax=args.retmax,
+                       api_key=args.api_key)
+
 
     # TODO: Read the FASTA file with SeqIO.parse
-    # records = ...
+    records = list(SeqIO.parse(str(out_path), "fasta"))
 
     # TODO: Compute GC for each sequence and print the results
-    # for rec in records:
-    #     print(f"{rec.id}\tGC={value:.3f}")
+    for rec in records:
+        gc = gc_fraction(str(rec.seq))
+        print(f"{rec.id}\tGC={gc:.3f}")
+
 
 
 if __name__ == "__main__":
