@@ -31,7 +31,16 @@ def init_score_matrix_global(m: int, n: int, gap: int):
       - First row: [j * gap] for j=0..n
     Return the matrix.
     """
-    raise NotImplementedError("TODO: implement global matrix initialization")
+    score = [[0] * (n + 1) for _ in range(m + 1)]
+
+    for i in range(m + 1):
+        score[i][0] = i * gap
+
+    for j in range(n + 1):
+        score[0][j] = j * gap
+
+    return score
+    
 
 
 def score_cell_global(score, i: int, j: int, a: str, b: str, match: int, mismatch: int, gap: int):
@@ -43,8 +52,15 @@ def score_cell_global(score, i: int, j: int, a: str, b: str, match: int, mismatc
       - left     = score[i][j-1] + gap
     Return max(diagonal, up, left).
     """
-    raise NotImplementedError("TODO: implement scoring for NW")
+    sub_cost = match if a == b else mismatch
 
+    diagonal = score[i - 1][j - 1] + sub_cost
+
+    up = score[i - 1][j] + gap
+
+    left = score[i][j - 1] + gap
+
+    return max(diagonal, up, left)
 
 def needleman_wunsch(seq1: str, seq2: str, match=1, mismatch=-1, gap=-2):
     # Simplified implementation of the Needleman–Wunsch algorithm.
@@ -99,7 +115,7 @@ def needleman_wunsch(seq1: str, seq2: str, match=1, mismatch=-1, gap=-2):
     return align1, align2, score[m][n]
 
 
-def load_two_sequences(fasta_path: Path, i1: int, i2: int):
+def load_two_sequences(fasta_path: Path, i1: int, i2: int, max_len):
     """
     Load sequences from a FASTA file and select two by index.
     """
@@ -108,8 +124,17 @@ def load_two_sequences(fasta_path: Path, i1: int, i2: int):
         raise SystemExit("[error] The file must contain at least 2 sequences.")
     if not (0 <= i1 < len(recs) and 0 <= i2 < len(recs)):
         raise SystemExit(f"[error] Invalid indices (0..{len(recs)-1}).")
-    return str(recs[i1].seq), str(recs[i2].seq), recs[i1].id, recs[i2].id
+    
+    #file my_tp53.fa is too fat (~ 170 000 000 aa), so we cut 
+    #So we cut the two sequences to shorten them
 
+    s1_full = str(recs[i1].seq)
+    s2_full = str(recs[i2].seq)
+
+    s1_short = s1_full[:max_len]
+    s2_short = s2_full[:max_len]
+
+    return s1_short, s2_short, recs[i1].id, recs[i2].id
 
 def main():
     ap = argparse.ArgumentParser()
@@ -122,7 +147,7 @@ def main():
     if not fasta_path.exists():
         raise SystemExit(f"[error] File not found: {fasta_path}")
 
-    s1, s2, id1, id2 = load_two_sequences(fasta_path, args.i1, args.i2)
+    s1, s2, id1, id2 = load_two_sequences(fasta_path, args.i1, args.i2, max_len=2000)
     a1, a2, sc = needleman_wunsch(s1, s2)
 
     print("=== Global Alignment (Needleman–Wunsch) ===")

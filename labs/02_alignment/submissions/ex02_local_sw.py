@@ -27,7 +27,8 @@ def init_score_matrix_local(m: int, n: int):
     TODO: Initialize the (m+1) x (n+1) matrix with all values = 0.
     Hint: use list comprehension or simple loops.
     """
-    raise NotImplementedError("TODO 1: implement init_score_matrix_local")
+    score = [[0] * (n + 1) for _ in range(m + 1)]
+    return score 
 
 
 def score_cell_local(score, i: int, j: int, a: str, b: str, match: int, mismatch: int, gap: int):
@@ -39,7 +40,15 @@ def score_cell_local(score, i: int, j: int, a: str, b: str, match: int, mismatch
       - left     = score[i][j-1] + gap
     Result = max(0, diagonal, up, left).
     """
-    raise NotImplementedError("TODO 2: implement scoring for SW")
+    sub_cost = match if a == b else mismatch
+
+    diagonal = score[i - 1][j - 1] + sub_cost
+
+    up = score[i - 1][j] + gap
+
+    left = score[i][j - 1] + gap
+
+    return max(0, diagonal, up, left)
 
 
 def smith_waterman(seq1: str, seq2: str, match=3, mismatch=-3, gap=-2):
@@ -90,7 +99,7 @@ def smith_waterman(seq1: str, seq2: str, match=3, mismatch=-3, gap=-2):
     return align1, align2, max_score
 
 
-def load_two_sequences(fasta_path: Path, i1: int, i2: int):
+def load_two_sequences(fasta_path: Path, i1: int, i2: int, max_len):
     """
     Load the FASTA file and select two sequences by index.
     """
@@ -99,8 +108,13 @@ def load_two_sequences(fasta_path: Path, i1: int, i2: int):
         raise SystemExit("[error] The file must contain at least 2 sequences.")
     if not (0 <= i1 < len(recs) and 0 <= i2 < len(recs)):
         raise SystemExit(f"[error] Invalid indices (0..{len(recs)-1}).")
-    return str(recs[i1].seq), str(recs[i2].seq), recs[i1].id, recs[i2].id
+    
+    #cf ex01
 
+    s1 = str(recs[i1].seq)[:max_len]
+    s2 = str(recs[i2].seq)[:max_len]
+
+    return s1, s2, recs[i1].id, recs[i2].id
 
 def main():
     ap = argparse.ArgumentParser()
@@ -113,7 +127,7 @@ def main():
     if not fasta_path.exists():
         raise SystemExit(f"[error] File not found: {fasta_path}")
 
-    s1, s2, id1, id2 = load_two_sequences(fasta_path, args.i1, args.i2)
+    s1, s2, id1, id2 = load_two_sequences(fasta_path, args.i1, args.i2, max_len=2000)
     a1, a2, sc = smith_waterman(s1, s2)
 
     print("=== Local Alignment (Smith–Waterman) ===")
