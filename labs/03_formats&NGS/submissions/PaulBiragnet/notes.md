@@ -1,0 +1,3 @@
+SRA accession used : SRR12882869
+
+Data quality verification is essential before variant analysis to ensure the reliability of genomic findings. Its primary goal is to prevent false positives by identifying and removing sequencing artifacts, such as reads with low Phred scores or residual adapter contamination, which can be mistakenly interpreted as true mutations. Furthermore, QC minimizes false negatives by detecting biases in coverage (like GC-bias) or excessive PCR duplication that could mask the presence of genuine, potentially pathogenic, variants. By ensuring the data is of high quality and homogeneity, QC provides the necessary statistical foundation for accurate alignment, variant calling, and downstream comparative analysis.

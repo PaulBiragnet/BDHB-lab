@@ -15,11 +15,13 @@ TODO:
 
 import os
 import gzip
+import sys
 from pathlib import Path
 from Bio import SeqIO
+import numpy as np
 
 # TODO: replace <handle> with your GitHub username
-handle = "<handle>"
+handle = "PaulBiragnet"
 
 in_fastq_plain = Path(f"data/work/{handle}/lab03/your_reads.fastq")
 in_fastq_gz = Path(f"data/work/{handle}/lab03/your_reads.fastq.gz")
@@ -46,15 +48,37 @@ total_bases = 0
 
 # TODO: complete the aggregation logic
 for record in reader:
-    # HINT:
-    # seq_str = str(record.seq)
-    # phred = record.letter_annotations["phred_quality"]
-    pass
+    
+    num_reads += 1
+
+    seq_str = str(record.seq)
+    phred = record.letter_annotations["phred_quality"]
+
+    current_length = len(seq_str)
+    
+    total_length += current_length
+    total_bases += current_length
+
+    total_n += seq_str.upper().count('N')
+
+    total_phred += sum(phred)
+    
 
 # TODO: compute final values (watch out for division by zero)
-len_mean = 0.0
-n_rate = 0.0
-phred_mean = 0.0
+if num_reads > 0:
+    len_mean = total_length / num_reads
+else:
+    len_mean = 0.0
+
+if total_bases > 0:
+    n_rate = total_n / total_bases
+else:
+    n_rate = 0.0
+
+if total_bases > 0:
+    phred_mean = total_phred / total_bases
+else:
+    phred_mean = 0.0
 
 with open(out_report, "w", encoding="utf-8") as out:
     out.write(f"Reads: {num_reads}\n")
