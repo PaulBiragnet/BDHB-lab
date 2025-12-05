@@ -1,0 +1,12 @@
+--- Variant 1 (rsID (rs1042522)) ---
+Searching PubMed with: 'rs1042522 AND TP53'
+Title: 1. Mol Biol Rep. 2025 Nov 27;53(1):130. doi: 10.1007/s11033-025-11305-5.
+Title: A retrospective Case-Control study investigating the association of XPC
+Title: Jahan Bristy N(1)(2), Islam MA(1)(3), Noor AR(1), Islam MMT(1), Kabir Y(4).
+------------------------------
+--- Variant 2 (Coordinates (chr17:7674910)) ---
+Searching PubMed with: 'chr17:7674910 AND TP53'
+Title: 1. Clin Cancer Res. 2024 Feb 1;30(3):600-615. doi: 10.1158/1078-0432.CCR-23-0932.
+Title: Aneuploidy Landscape in Precursors of Ovarian Cancer.
+Title: Wang Y(#)(1), Douville C(#)(2)(3)(4)(5), Chien YW(1), Wang BG(6)(7)(8), Chen
+------------------------------
